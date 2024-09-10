@@ -23,5 +23,9 @@ public class LoginController {
 		 return lservice.correctEncode(username, password);
 	 }
 	 
+	 @PostMapping("/registerAdmin")
+	 public String adminRegister(@RequestBody Login login) throws ClassNotFoundException, SQLException {
+		 return lservice.registerUser(login);
+	 }
 
 }
