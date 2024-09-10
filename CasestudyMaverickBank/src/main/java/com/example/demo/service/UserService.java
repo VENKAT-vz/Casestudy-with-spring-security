@@ -21,7 +21,8 @@ public class UserService {
     public String addUser(User user) {
         if (userRepo.existsById(user.getUsername())) {
             return "User with username already exists!";
-        } else if (userRepo.findByEmailid(user.getEmailid()) != null) {
+        } 
+        else if (userRepo.findByEmailid(user.getEmailid()) != null) {
             return "User with email ID already exists!";
         }
         userRepo.save(user);
@@ -34,8 +35,8 @@ public class UserService {
 
     public User searchUser(String usernameOrEmail) {
         User user = userRepo.findByUsername(usernameOrEmail);
-
-        if (user == null) {
+        if (user == null) 
+        {
             user = userRepo.findByEmailid(usernameOrEmail);
         }
 
@@ -44,40 +45,23 @@ public class UserService {
     
     public boolean deleteUser(String username) {
         User user = userRepo.findByUsername(username);
-        if (user!=null) {
+        if (user!=null) 
+        {
             userRepo.deleteById(username);
             return true;
-        } else
+        } 
+        else
             return false;
     }
     
-    public boolean updateAadhaarAndPan(String username, String aadharNum, String panNum) {
-        User user = userRepo.findByUsername(username);
-        
-        if (user != null) {
-            if (aadharNum != null) {
-                user.setAadharNum(aadharNum);
-            }
-            if (panNum != null) {
-                user.setPanNum(panNum);
-            }
-            
-            userRepo.save(user);
-            
-            return true;
-        } else {
-            return false; 
-        }
-    }
-    
 	 public String approveUserAccounts(String username) {
-		    int rowsAffected = userRepo.approveUserAccount(username);
-		    
-		    if (rowsAffected > 0) {
+		    int rowsAffected = userRepo.approveUserAccount(username);   
+		    if (rowsAffected > 0) 
+		    {
 		        return "User Account approved successfully.";
-		    } else {
-		        return " User Account approval failed. Account not found.";
-		    }
+		    } 
+		    else 
+		        return " User Account approval failed. Account not found.";   
 		}
 
 }

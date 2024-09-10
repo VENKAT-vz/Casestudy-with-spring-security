@@ -21,9 +21,6 @@ public class LoginService {
 	@Autowired
 	private LoginRepository lrepo;
 	
-	@Autowired
-	private JdbcTemplate jdbctemplate;
-	
     @Autowired
     private AccountService accountService;
     
@@ -96,31 +93,28 @@ public class LoginService {
 //        return encryptedpassword;
 //	}
 //	
-//	public String loginuser(String username, String password) throws ClassNotFoundException, SQLException {
-//	    String encryptedPass = getCode(password);
-//	    String query = "SELECT COUNT(*) FROM login WHERE username = ? AND password = ?";
-//
-//	    int count = jdbctemplate.queryForObject(query, new Object[]{username, encryptedPass}, Integer.class);
-//	    
-//	    if (count > 0) {
-//	        List<Account> accounts = accountService.getAccountByNumberByusername(username);
-//
-//	        StringBuilder result = new StringBuilder("Login successful\n");
-//
-//	        for (Account account : accounts) {
-//	            result.append("In the ")
-//	                  .append(account.getAccountType())
-//	                  .append(" account of account number ")
-//	                  .append(account.getAccountNumber())
-//	                  .append("\nThe available balance is ")
-//	                  .append(account.getBalance())
-//	                  .append("\n\n");
-//	        }
-//
-//	        return result.toString();  
-//	    }
-//
-//	    return "Invalid Credentials. Try again.";
-//	}
+	public String loginuser(String username, String password) throws ClassNotFoundException, SQLException {
+
+        Login login = lrepo.findByUsername(username);
+
+        if (login == null || !bCryptPasswordEncoder.matches(password, login.getPassword())) {
+            return "Invalid Credentials. Try again.";
+        } 
+        List<Account> accounts = accountService.getAccountByNumberByusername(username);
+        
+        StringBuilder result = new StringBuilder("Login successful\n");
+         for (Account account : accounts) 
+        {
+            	result.append("In the ")
+                  .append(account.getAccountType())
+                   .append(" account of account number ")
+                  .append(account.getAccountNumber())
+                 .append("\nThe available balance is ")
+                  .append(account.getBalance())
+                  .append("\n\n");
+        }
+
+        return result.toString();
+	}
 
 }

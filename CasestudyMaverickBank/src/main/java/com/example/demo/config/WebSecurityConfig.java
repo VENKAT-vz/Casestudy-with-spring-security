@@ -14,7 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -34,14 +33,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
     	http
         .authorizeRequests()
-            .antMatchers("/admin/approve-user-account/**").hasRole("ADMIN")
-            .antMatchers("/manager/approve-account/**").hasRole("BANK_MANAGER")
-            .antMatchers("/users/searchUser/{username}").hasRole("CUSTOMER")
+            .antMatchers("/admin/**").hasRole("ADMIN")
+            .antMatchers("/manager/**").hasRole("BANK_MANAGER")
+            .antMatchers("/users/**").hasRole("CUSTOMER")
+            .antMatchers("/login/**").hasRole("CUSTOMER")
             .anyRequest().authenticated()
         .and()
         .httpBasic() 
         .and()
-        .formLogin().disable() 
+        .formLogin().permitAll()
+        .and()
         .logout().permitAll()
         .and()
         .csrf().disable();  

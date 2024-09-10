@@ -24,8 +24,6 @@ public class AccountService {
     @Autowired
     private UserRepository userRepository;
     
-    @Autowired
-	private JdbcTemplate jdbcTemplate;
 
     public Account addAccount(Account account, String aadhaarNumber, String panNumber) throws ClassNotFoundException, SQLException {
     	account.setAccountNumber(generateAccountNo());
@@ -36,6 +34,9 @@ public class AccountService {
     	//here we need to have a list like combinations of branches and their ifsc codes and 
     	//whenever they enter branchname it should automatically set the ifsc codes.
     	//account.setIfscCode(null);
+    	
+    	//get the pan number and aadhar only once ->check that here.
+    	
     	Account savedAccount=accountRepository.save(account);
         User user = userRepository.findByUsername(account.getUsername()); 
         if (user != null) {

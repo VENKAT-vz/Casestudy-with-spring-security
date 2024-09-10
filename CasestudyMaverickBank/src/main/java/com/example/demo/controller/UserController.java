@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.domain.Account;
 import com.example.demo.domain.Login;
 import com.example.demo.domain.User;
+import com.example.demo.service.AccountService;
+import com.example.demo.service.BankService;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.UserService;
 
@@ -30,7 +33,18 @@ public class UserController {
 	@Autowired
 	private LoginService lservice;
 
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private BankService bankService;
 	
+    
+	 @GetMapping("/login/{username}/{password}")
+	 public String loginuser(@PathVariable String username,@PathVariable String password) throws ClassNotFoundException, SQLException {
+		 return lservice.loginuser(username, password);
+	 }
+	 
 	@PostMapping(value = "/addUser")
 	public void addUser(@RequestBody Map<String, Object> requestBody) throws ClassNotFoundException, SQLException {
 
@@ -69,33 +83,42 @@ public class UserController {
 	    lservice.registerUser(login);
 	}
 	
-	@GetMapping(value="/searchUser/{username}")
-	public User searchuser(@PathVariable String username) {
-		return service.searchUser(username);
-	}
-	
-	@GetMapping(value = "/showAll")
-	public List<User> showAllUsers() {
-	    return service.showAllUsers();
-	}
-	
-    @PutMapping("/update/{username}/{aadharNum}/{panNum}")
-    public String updateAadhaarAndPan(@PathVariable String username,@PathVariable String aadharNum,  @PathVariable String panNum)
-      {
-        boolean isUpdated = service.updateAadhaarAndPan(username, aadharNum, panNum);
-        if (isUpdated) {
-            return "Aadhaar and PAN details updated successfully.";
-        } else {
-            return "User not found.";
-        }
+
+    @PostMapping("/addAccounts")
+    public Account addAccount(@RequestBody Map<String, Object> userdet) throws ClassNotFoundException, SQLException {
+        Map<String, Object> accountdet = (Map<String, Object>) userdet.get("account");
+        String aadhaarNumber = (String) userdet.get("aadhaarNumber");
+        String panNumber = (String) userdet.get("panNumber");
+
+        Account account = new Account();
+        account.setAccountType((String) accountdet.get("accountType"));
+        account.setBalance((Double) accountdet.get("balance"));
+        account.setBranchName((String) accountdet.get("branchName"));
+        account.setIfscCode((String) accountdet.get("ifscCode"));
+        account.setUsername((String) accountdet.get("username"));
+        account.setEmailid((String) accountdet.get("emailid"));
+
+        return accountService.addAccount(account, aadhaarNumber, panNumber);
+    }
+    
+    @GetMapping("/myaccounts/{username}")
+    public List<Account> getAccountByNumberByusername(@PathVariable String username) {
+        return accountService.getAccountByNumberByusername(username);
+    }
+    
+    @PostMapping("/deposit/{accountNumber}/{amount}")
+    public String deposit(@PathVariable String accountNumber, @PathVariable double amount) throws ClassNotFoundException, SQLException {
+        return bankService.deposit(accountNumber, amount);
+    }
+
+    @PostMapping("/withdraw/{accountNumber}/{amount}")
+    public String withdraw(@PathVariable String accountNumber, @PathVariable double amount) throws ClassNotFoundException, SQLException {
+        return bankService.withdraw(accountNumber, amount);
+    }
+
+    @PostMapping("/transfer/{phnum1}/{phnum2}/{amount}")
+    public String moneyTransfer(@PathVariable String phnum1, @PathVariable String phnum2, @PathVariable double amount) throws ClassNotFoundException, SQLException {
+        return bankService.moneyTransfer(phnum1, phnum2, amount);
     }
 	
-	 @DeleteMapping("/delete/{username}")
-	public String deleteUser(@PathVariable String username) {
-	      boolean isDeleted = service.deleteUser(username);
-	        if (isDeleted) {
-	            return "User deleted successfully.";
-	        } else 
-	            return "User not found.";
-	    }
 }
