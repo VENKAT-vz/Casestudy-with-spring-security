@@ -1,6 +1,8 @@
 <center>Casestudy with Spring Secutity</center>
 <pre>
--> Import and run this project
+-> Import the project 
+      and change the server port and password in the properties 
+      and run this project
       In postman:
             POST method with URL  "http://localhost:1133/users/addUser"
                   In the body, to register a customer
