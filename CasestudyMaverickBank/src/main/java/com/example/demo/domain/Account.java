@@ -52,6 +52,10 @@ public class Account {
     private User user;
 
 
+    public Account() {
+    	
+    }
+    
     public String getAccountNumber() {
         return accountNumber;
     }

@@ -8,13 +8,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.Account;
+import com.example.demo.domain.Loan;
 import com.example.demo.domain.User;
 import com.example.demo.service.AccountService;
+import com.example.demo.service.LoanService;
 import com.example.demo.service.UserService;
 
 @RestController
@@ -24,17 +27,28 @@ public class ManagerController {
 	@Autowired
 	private AccountService accountService;
 	
-
-
+    @Autowired
+    private LoanService loanService;
+	
     @GetMapping("/unapproved-accounts")
     public ResponseEntity<List<Map<String, Object>>> getNotApprovedAccounts() {
         List<Map<String, Object>> notApprovedAccounts = accountService.getNotApprovedAccounts();
         return ResponseEntity.ok(notApprovedAccounts);
     }
-    
+        
     @PutMapping("/approve-account/{accountNumber}")
     public String approveAccount(@PathVariable String accountNumber) {
     	return accountService.approveAccounts(accountNumber);
+    }
+    
+    @GetMapping("/show-unapprovedloans")
+    public List<Loan> unapprovedLoan(){
+    	return loanService.UnapprovedLoans();
+    }
+    
+    @PutMapping("/close-account/{accountNumber}")
+    public String closeAccount(@PathVariable String accountNumber) {
+    	return accountService.closeAccount(accountNumber);
     }
     
     @GetMapping("/showAccounts")
@@ -55,6 +69,26 @@ public class ManagerController {
         } else {
             return "Account not found.";
         }
+    }
+    
+    @PostMapping("/searchLoan/{accountnumber}")
+    public Loan searchLoan(@PathVariable String accountnumber) {
+    	return loanService.searchLoan(accountnumber);
+    }
+    
+    @PostMapping("/approveloan/{loanid}")
+    public String updateLoan(@PathVariable int loanid) {
+    	return loanService.updateLoan(loanid);
+    }
+    
+    @GetMapping("/accountstmts/{accountnumber}")
+    public String genereteAccountStatements(@PathVariable String accountnumber) {
+    	return accountService.generateAccountStatement(accountnumber);
+    }
+    
+    @GetMapping("/financialreports/{accountnumber}")
+    public String financialReports(@PathVariable String accountnumber) {
+    	return accountService.generateFinancialReport(accountnumber);
     }
     
 

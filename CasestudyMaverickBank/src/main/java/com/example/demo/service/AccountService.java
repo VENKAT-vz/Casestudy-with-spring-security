@@ -5,14 +5,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.domain.Account;
+import com.example.demo.domain.Transaction;
 import com.example.demo.domain.User;
 import com.example.demo.repository.AccountRepository;
+import com.example.demo.repository.TransactionRepository;
 import com.example.demo.repository.UserRepository;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AccountService {
@@ -23,6 +26,9 @@ public class AccountService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private TransactionRepository transRepository;
     
 
     public Account addAccount(Account account, String aadhaarNumber, String panNumber) throws ClassNotFoundException, SQLException {
@@ -91,5 +97,69 @@ public class AccountService {
 		        return "Account approval failed. Account not found.";
 		    }
 		}
+	 
+	 public String closeAccount(String accountNumber) {
+		    int rowsAffected = accountRepository.closeAccount(accountNumber);
+		    
+		    if (rowsAffected > 0) {
+		        return "Account closed successfully.";
+		    }
+		    else 
+		        return "Account closed failed. Account not found.";
+		    
+		}
+	 
+	  public String generateAccountStatement(String accountNumber) {
+	        StringBuilder statement = new StringBuilder();
+	        
+	        Optional<Account> accountOpt = accountRepository.findByAccountNumber(accountNumber);
+	        if (accountOpt.isPresent()) 
+	        {
+	            Account account = accountOpt.get();
+	            statement.append("Account Statement for Account Number: ").append(accountNumber).append("\n")
+	                     .append("Account Type: ").append(account.getAccountType()).append("\n")
+	                     .append("Balance: ").append(account.getBalance()).append("\n")
+	                     .append("Branch Name: ").append(account.getBranchName()).append("\n")
+	                     .append("IFSC Code: ").append(account.getIfscCode()).append("\n")
+	                     .append("Status: ").append(account.getStatus()).append("\n\n");
+	        } 
+	        else 
+	            return "Account not found!";
+	        
+
+	     List<Transaction> transactions = transRepository.findByAccountNumberOrderByTransactionDateDesc(accountNumber);
+	        statement.append("Transaction History:\n");
+	        for (Transaction transaction : transactions) 
+	        {
+	            statement.append("Date: ").append(transaction.getTransactionDate()).append(", ")
+	                     .append("Type: ").append(transaction.getTransactionType()).append(", ")
+	                     .append("Amount: ").append(transaction.getAmount()).append("\n");
+	          }
+	        
+	        
+	        return statement.toString();
+	    }
+	  
+	public String generateFinancialReport(String accountNumber) {
+	        StringBuilder report = new StringBuilder();
+
+	        report.append("Financial report of an account with this accountnumber ").append(accountNumber).append(":\n\n");
+        Double totalDeposits = transRepository.sumDeposits(accountNumber);
+	        report.append("Total Deposits: ").append(totalDeposits != null ? totalDeposits : 0).append("\n");
+
+	        Double totalWithdrawals = transRepository.sumWithdrawals(accountNumber);
+	       report.append("Total Withdrawals: ").append(totalWithdrawals != null ? totalWithdrawals : 0).append("\n");
+
+	     Optional<Account> accountOpt = accountRepository.findByAccountNumber(accountNumber);
+	        if (accountOpt.isPresent()) 
+	        {
+	            report.append("Current Balance: ").append(accountOpt.get().getBalance()).append("\n");
+	        } 
+	        else 
+	            report.append("Account not found!\n");
+	        
+	        return report.toString();
+	    }
+
 
 }

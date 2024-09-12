@@ -2,6 +2,7 @@ package com.example.demo.repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -17,6 +18,8 @@ import com.example.demo.domain.Account;
 public interface AccountRepository extends JpaRepository<Account, String> {
 
 	List<Account> findByUsername(String username);
+	
+	Optional<Account> findByAccountNumber(String accountNumber);
 	
     @Query("SELECT a FROM Account a JOIN a.user u WHERE u.contactNumber = :phoneNumber")
     Account findByUserContactNumber(String phoneNumber);
@@ -40,6 +43,11 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     @Modifying
     @Query("UPDATE Account a SET a.status = 'active' WHERE a.accountNumber = :accountNumber")
     int approveAccount(@Param("accountNumber") String accountNumber);
+    
+    @Transactional
+    @Modifying
+    @Query("UPDATE Account a SET a.status = 'closed' WHERE a.accountNumber = :accountNumber")
+    int closeAccount(@Param("accountNumber") String accountNumber);
     
     @Modifying
     @Transactional

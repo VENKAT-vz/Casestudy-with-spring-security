@@ -16,10 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.domain.Account;
+import com.example.demo.domain.Beneficiaries;
+import com.example.demo.domain.Loan;
 import com.example.demo.domain.Login;
 import com.example.demo.domain.User;
 import com.example.demo.service.AccountService;
 import com.example.demo.service.BankService;
+import com.example.demo.service.BeneficiariesService;
+import com.example.demo.service.LoanService;
 import com.example.demo.service.LoginService;
 import com.example.demo.service.UserService;
 
@@ -38,6 +42,12 @@ public class UserController {
 
     @Autowired
     private BankService bankService;
+    
+    @Autowired
+    private LoanService loanService;
+    
+    @Autowired
+    private BeneficiariesService benservice;
 	
     
 	 @GetMapping("/login/{username}/{password}")
@@ -120,5 +130,27 @@ public class UserController {
     public String moneyTransfer(@PathVariable String phnum1, @PathVariable String phnum2, @PathVariable double amount) throws ClassNotFoundException, SQLException {
         return bankService.moneyTransfer(phnum1, phnum2, amount);
     }
+    
+    @PostMapping("/addLoan")
+    public String addloan(@RequestBody Loan loan) {
+    	return loanService.addLoan(loan);
+    }
+    
+    @GetMapping("/searchLoan/{accountnumber}")
+    public List<Loan> searchLoan(@PathVariable String accountnumber) {
+    	return loanService.viewLoansByAccountNumber(accountnumber);
+    }
+    
+    @PostMapping("/addBeneficiary")
+    public String addBeneficiary(@RequestBody Beneficiaries benficiary) {
+    	return benservice.giveBeneficiaryDetails(benficiary);
+    }
+    
+    @GetMapping("/searchBen/{username}")
+    public List<Beneficiaries> searchBeneficiary(@PathVariable String username) {
+    	return benservice.searchBeneficiaries(username);
+    }
+    
+    
 	
 }

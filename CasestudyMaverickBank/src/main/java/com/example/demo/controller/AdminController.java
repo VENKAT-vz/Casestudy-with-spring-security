@@ -25,9 +25,19 @@ public class AdminController {
 		@Autowired
 		private UserService service;
 		
+		@GetMapping(value = "/showUnapproved")
+		public List<User> showUnapproved() {
+		    return service.unapprovedUserAccounts();
+		}
+		
 	    @PutMapping("/approve-user-account/{username}")
 	    public String approveAccount(@PathVariable String username) {
 	    	return userservice.approveUserAccounts(username);
+	    }
+	    
+	    @PutMapping("/close-user-account/{username}")
+	    public String closeuserAccount(@PathVariable String username) {
+	    	return userservice.closeUserAccounts(username);
 	    }
 	    
 		@GetMapping(value = "/showAll")

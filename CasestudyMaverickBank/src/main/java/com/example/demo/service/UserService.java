@@ -8,6 +8,7 @@ import com.example.demo.domain.User;
 import com.example.demo.repository.UserRepository;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -63,5 +64,20 @@ public class UserService {
 		    else 
 		        return " User Account approval failed. Account not found.";   
 		}
+	 
+	 public String closeUserAccounts(String username) {
+		    int rowsAffected = userRepo.closeUserAccount(username);   
+		    if (rowsAffected > 0) 
+		    {
+		        return "User Account closed successfully.";
+		    } 
+		    else 
+		        return " User Account closing failed. Account not found.";   
+		}
+	 
+	 public List<User> unapprovedUserAccounts() {
+		    return userRepo.unapproveduseraccounts();
+		}
+
 
 }
